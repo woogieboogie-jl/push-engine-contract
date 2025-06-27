@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IVerifierProxy} from "../vendor/IVerifierProxy.sol";
+import {IVerifierProxy} from "@chainlink/contracts/src/v0.8/interfaces/IVerifierProxy.sol";
 
 /**
  * @title IDataStreamsFeed

@@ -5,13 +5,17 @@ import {AccessControlEnumerable} from "@openzeppelin/contracts/access/extensions
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {AggregatorV2V3Interface} from "../vendor/AggregatorV2V3Interface.sol";
-import {DataStreamsStructs} from "../vendor/DataStreamsStructs.sol";
-import {AdrastiaDataStreamsCommon} from "../common/AdrastiaDataStreamsCommon.sol";
+
+// --- Chainlink Interfaces ---
+import {AggregatorV2V3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV2V3Interface.sol";
+import {IVerifierProxy} from "@chainlink/contracts/src/v0.8/llo-feeds/v0.3.0/interfaces/IVerifierProxy.sol";
+import {IFeeManager} from "@chainlink/contracts/src/v0.8/llo-feeds/v0.3.0/interfaces/IFeeManager.sol";
+
+// --- Project-Specific Interfaces & Libraries ---
+import {AdrastiaDataStreamsCommon} from "./AdrastiaDataStreamsCommon.sol";
 import {IDataStreamsFeed} from "./IDataStreamsFeed.sol";
-import {IVerifierProxy} from "../vendor/IVerifierProxy.sol";
-import {IFeeManager} from "../vendor/IFeeManager.sol";
-import {Roles} from "../common/Roles.sol";
+import {DataStreamsStructs} from "./DataStreamsStructs.sol";
+import {Roles} from "./Roles.sol";
 import {IDataStreamsUpdateHook} from "./IDataStreamsUpdateHook.sol";
 
 /**
