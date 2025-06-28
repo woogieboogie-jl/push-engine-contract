@@ -167,7 +167,7 @@ trigger, calls:
 updateReport(uint16 reportVersion, bytes verifiedReportData)
 ```
 
-on every target contract defined in **config.yml**.
+on a single chain but every target contract defined in **config.yml**.
 
 ### Minimal working `config.yml`
 
