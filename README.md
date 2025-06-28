@@ -21,9 +21,9 @@ The goal is to give you a quick, copy-pasteable starting point for:
 
 | What | Why | Where to get it |
 |------|-----|-----------------|
-| **Verifier Proxy address** | Every chain has a dedicated contract that validates Data Streams reports. | See the *Verifier Addresses* table in the Chainlink docs → <https://docs.chain.link/data-streams/crypto-streams?page=1&testnetPage=1&testnetSearch=eth> |
-| **LINK & native tokens**   | You'll pay the verification fee in LINK and gas in the native token. | Faucets: <https://faucets.chain.link><br>LINK contract list: <https://docs.chain.link/resources/link-token-contracts> |
-| **RPC URL**                | Foundry & `cast` need it to send txs. | Chainlist: <https://chainlist.org/> |
+| **Verifier Proxy address** | Every chain has a dedicated contract that validates Data Streams reports. | See the *Verifier&nbsp;Addresses* table in the **[Chainlink Docs]** |
+| **LINK & native tokens**   | You'll pay the verification fee in LINK and gas in the native token. | [Faucets](https://faucets.chain.link) · [LINK contracts](https://docs.chain.link/resources/link-token-contracts) |
+| **RPC URL**                | Foundry & `cast` need it to send txs. | [Chainlist](https://chainlist.org) |
 | **Private key**            | Account that will own the feed and pay fees. | Export from your wallet → store in `.env` as `PRIVATE_KEY=<hex>` |
 
 Create a `.env` file in the repo root:
@@ -138,20 +138,130 @@ forge verify-contract \
 
 ## 5&nbsp;· Run the transmitter
 
-Clone <https://github.com/woogieboogie-jl/chainlink-datastreams-transmitter> and
-follow its README.  Key points:
+Follow these steps to bring an off-chain 📡 transmitter online.
 
-1. Copy `config-chainlink-example.yml` and fill in your **verifier address**,
-   feed ID, contract address, and RPC.
-2. The transmitter pushes reports via
-   ```solidity
-   updateReport(uint16 reportVersion, bytes verifiedReportData)
-   ```
-   which we now fully support.
-3. Bring everything up:
-   ```bash
-   docker compose up -d
-   ```
+```bash
+# 1 · clone & enter
+git clone https://github.com/woogieboogie-jl/chainlink-datastreams-transmitter
+cd chainlink-datastreams-transmitter
+
+# 2 · env vars
+cp .env.example .env            # create your own copy
+# open .env and fill in PRIVATE_KEY, RPC urls, etc.
+
+# 3 · optional – custom config
+auth cp config-chainlink-example.yml config.yml  # customise as needed
+
+# 4 · deps & run
+npm install                      # or pnpm install
+docker compose up -d            # starts redis + node + ui
+
+# 5 · UI
+open http://localhost:3000       # dashboard
+```
+
+The transmitter continuously listens for deviation on the ETH/USD feed and, on
+trigger, calls:
+
+```solidity
+updateReport(uint16 reportVersion, bytes verifiedReportData)
+```
+
+on every target contract defined in **config.yml**.
+
+### Minimal working `config.yml`
+
+```yaml
+# --- Feeds (off-chain subscriptions) ----------------------------
+feeds:
+  - name: "ETH/USD"
+    feedId: "0x000359843a543ee2fe414dc14c7e7920ef10f4372990b79d6361cdc0dd1ba782"
+
+# --- Defaults ---------------------------------------------------
+chainId: 1301          # default target chain – Unichain Sepolia in this file
+gasCap: "150000"
+interval: "*/30 * * * * *"  # every 30 s
+priceDeltaPercentage: 0.01   # 0.01 %
+
+# --- RPC & Currency metadata -----------------------------------
+chains:
+  # Avalanche Fuji
+  - id: 43113
+    name: "Avalanche Fuji Network"
+    currencyName: "Fuji AVAX"
+    currencySymbol: "AVAX"
+    currencyDecimals: 18
+    rpc: "https://api.avax-test.network/ext/bc/C/rpc"
+    testnet: true
+
+  # Arbitrum Sepolia
+  - id: 421614
+    name: "Arbitrum Sepolia"
+    currencyName: "Arbitrum Sepolia Ether"
+    currencySymbol: "ETH"
+    currencyDecimals: 18
+    rpc: "https://sepolia-rollup.arbitrum.io/rpc"
+    testnet: true
+
+  # Unichain Sepolia
+  - id: 1301
+    name: "Unichain Sepolia"
+    currencyName: "Unichain"
+    currencySymbol: "UNI"
+    currencyDecimals: 18
+    rpc: "https://unichain-sepolia.drpc.org"
+    testnet: true
+
+# --- Data-Streams Verifier addresses ----------------------------
+verifierAddresses:
+  - chainId: 43113  # Fuji
+    address: "0x2bf612C65f5a4d388E687948bb2CF842FFb8aBB3"
+  - chainId: 421614 # Arbitrum Sepolia
+    address: "0x2ff010DEbC1297f19579B4246cad07bd24F2488A"
+  - chainId: 1301   # Unichain Sepolia
+    address: "0x60fAa7faC949aF392DFc858F5d97E3EEfa07E9EB"
+
+# --- Target contracts (on-chain writes) -------------------------
+targetChains:
+  - chainId: 43113     # Fuji
+    targetContracts:
+      - feedId: "0x000359843a543ee2fe414dc14c7e7920ef10f4372990b79d6361cdc0dd1ba782"
+        address: "0xb3DCAB3217cC2f8f19A9CAa555f5f7C8BB5cB749"
+        functionName: updateReport
+        functionArgs: [reportVersion, verifiedReport]
+        abi:
+          - inputs: [{internalType: uint16,name: reportVersion,type: uint16},{internalType: bytes,name: verifiedReportData,type: bytes}]
+            name: updateReport
+            outputs: []
+            stateMutability: nonpayable
+            type: function
+
+  - chainId: 421614    # Arbitrum Sepolia
+    targetContracts:
+      - feedId: "0x000359843a543ee2fe414dc14c7e7920ef10f4372990b79d6361cdc0dd1ba782"
+        address: "0x180473Ff989D30F0eDB4a159174C1964A504854D"
+        functionName: updateReport
+        functionArgs: [reportVersion, verifiedReport]
+        abi: *id001
+
+  - chainId: 1301       # Unichain Sepolia
+    targetContracts:
+      - feedId: "0x000359843a543ee2fe414dc14c7e7920ef10f4372990b79d6361cdc0dd1ba782"
+        address: "0x74CD225023c01D6B6244913F6Ce2B899482944f3"
+        functionName: updateReport
+        functionArgs: [reportVersion, verifiedReport]
+        abi: *id001
+```
+
+> The YAML uses an anchor `*id001` so the ABI block isn't repeated three times.
+
+#### Need help?
+
+* Full transmitter docs → **[README](https://github.com/woogieboogie-jl/chainlink-datastreams-transmitter#readme)**
+* Example configs → `config-chainlink-example.yml` in that repo.
+
+Once the service is running you can watch log output in `logs/` or the browser
+dashboard.
 
 ---
 
@@ -173,3 +283,5 @@ follow its README.  Key points:
 * **LINK balance 0** → top up via faucet and approve LINK spend if needed.
 
 Happy building! 🚀
+
+[Chainlink Docs]: https://docs.chain.link/data-streams/crypto-streams?page=1&testnetPage=1&testnetSearch=eth
