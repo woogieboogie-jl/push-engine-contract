@@ -2,7 +2,7 @@
 
 > A minimal example of deploying and operating a Chainlink **Data Streams** consumer contract.  
 > This repository contains an opinionated wrapper around the community-maintained
-> [`DataStreamsFeed.sol`](src/feed/DataStreamsFeed.sol) implementation from
+> [`DataStreamsFeed.sol`](https://github.com/adrastia-oracle/adrastia-chainlink-data-streams/blob/main/contracts/feed/DataStreamsFeed.sol) implementation from
 > Adrastia.
 
 The goal is to give you a quick, copy-pasteable starting point for:
