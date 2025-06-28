@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {AccessControlEnumerable} from "@openzeppelin/contracts/access/extensions/AccessControlEnumerable.sol";
+import {AccessControlEnumerable} from "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // --- Chainlink Interfaces ---
-import {AggregatorV2V3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV2V3Interface.sol";
-import {IVerifierProxy} from "@chainlink/contracts/src/v0.8/llo-feeds/v0.3.0/interfaces/IVerifierProxy.sol";
-import {IFeeManager} from "@chainlink/contracts/src/v0.8/llo-feeds/v0.3.0/interfaces/IFeeManager.sol";
+import {AggregatorV2V3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV2V3Interface.sol";
 
 // --- Project-Specific Interfaces & Libraries ---
-import {AdrastiaDataStreamsCommon} from "./AdrastiaDataStreamsCommon.sol";
-import {IDataStreamsFeed} from "./IDataStreamsFeed.sol";
-import {DataStreamsStructs} from "./DataStreamsStructs.sol";
-import {Roles} from "./Roles.sol";
-import {IDataStreamsUpdateHook} from "./IDataStreamsUpdateHook.sol";
+import {AdrastiaDataStreamsCommon} from "src/common/AdrastiaDataStreamsCommon.sol";
+import {IAdrastiaVerifierProxy} from "src/interfaces/IAdrastiaVerifierProxy.sol";
+import {IAdrastiaFeeManager} from "src/interfaces/IAdrastiaFeeManager.sol";
+import {IDataStreamsFeed} from "src/interfaces/IDataStreamsFeed.sol";
+import {DataStreamsStructs} from "src/structs/DataStreamsStructs.sol";
+import {Roles} from "src/common/Roles.sol";
+import {IDataStreamsUpdateHook} from "src/interfaces/IDataStreamsUpdateHook.sol";
 
 /**
  * @title DataStreamsFeed
@@ -49,7 +49,9 @@ import {IDataStreamsUpdateHook} from "./IDataStreamsUpdateHook.sol";
  * The `setUpdateHook` function allows for setting a post-update hook that is called after a report is updated.
  * The hook can be used to trigger additional actions after a report is updated. Note that reentrancy by hooks is
  * allowed, but unless subsequent update calls provide a more recent report, such subsequent calls will revert.
- */
+ */ 
+
+
 contract DataStreamsFeed is
     IDataStreamsFeed,
     AggregatorV2V3Interface,
@@ -130,9 +132,9 @@ contract DataStreamsFeed is
     }
 
     /**
-     * @notice The Chainlink verifier proxy contract.
+     * @notice The IAdrastiaVerifierProxy verifier proxy contract.
      */
-    IVerifierProxy public immutable override verifierProxy;
+    IAdrastiaVerifierProxy public immutable override verifierProxy;
 
     /**
      * @notice The ID of the feed. This is the same as the feedId in the report.
@@ -314,7 +316,7 @@ contract DataStreamsFeed is
             revert InvalidConstructorArguments();
         }
 
-        verifierProxy = IVerifierProxy(verifierProxy_);
+        verifierProxy = IAdrastiaVerifierProxy(verifierProxy_);
         feedId = _feedId;
         decimals = _decimals;
         description = _description;
@@ -701,7 +703,7 @@ contract DataStreamsFeed is
 
     function _handleFeeApproval() internal virtual {
         // Retrieve fee manager and reward manager
-        IFeeManager feeManager = IFeeManager(address(verifierProxy.s_feeManager()));
+        IAdrastiaFeeManager feeManager = IAdrastiaFeeManager(address(verifierProxy.s_feeManager()));
         if (address(feeManager) == address(0)) {
             // No fee manager. Fees are disabled.
             return;

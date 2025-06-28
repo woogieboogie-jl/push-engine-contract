@@ -2,8 +2,8 @@
 pragma solidity ^0.8.0;
 
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
-import {DataStreamsFeed} from "./DataStreamsFeed.sol";
-import {Roles} from "../common/Roles.sol";
+import {DataStreamsFeed} from "src/feed/DataStreamsFeed.sol";
+import {Roles} from "src/common/Roles.sol";
 
 /**
  * @title DataStreamsFeedFactory

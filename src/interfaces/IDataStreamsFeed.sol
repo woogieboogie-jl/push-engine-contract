@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IVerifierProxy} from "@chainlink/contracts/src/v0.8/interfaces/IVerifierProxy.sol";
+import {IAdrastiaVerifierProxy} from "src/interfaces/IAdrastiaVerifierProxy.sol";
 
 /**
  * @title IDataStreamsFeed
@@ -16,7 +16,7 @@ interface IDataStreamsFeed {
      *
      * @return The address of the verifier proxy contract.
      */
-    function verifierProxy() external view returns (IVerifierProxy);
+    function verifierProxy() external view returns (IAdrastiaVerifierProxy);
 
     /**
      * @notice Gets the Chainlink Data Streams feed ID.

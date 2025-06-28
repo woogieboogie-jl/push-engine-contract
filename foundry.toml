@@ -1,12 +1,21 @@
 [profile.default]
 src = "src"
 out = "out"
-libs = ["lib"] # It's good practice to keep this line for forge-std
+load_from_env_file = true
+libs = ["lib"]
+solc_version = "0.8.19"
 remappings = [
-    '@chainlink/contracts/=lib/chainlink-brownie-contracts/contracts/',
+    # Corrected, less specific paths for node_modules packages
+    '@openzeppelin/contracts-upgradeable/=node_modules/@openzeppelin/contracts-upgradeable/',
+    '@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/',
+    '@chainlink/contracts/=node_modules/@chainlink/contracts/',
+    
+    # Standard path for forge-std
     'forge-std/=lib/forge-std/src/'
 ]
 
-# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options[rpc_endpoints]
+
+[rpc_endpoints]
 monad_testnet = "https://testnet-rpc.monad.xyz"
 sepolia = "https://1rpc.io/sepolia"
+avalanche_fuji = "https://avalanche-fuji.drpc.org"
