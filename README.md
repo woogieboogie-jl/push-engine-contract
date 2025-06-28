@@ -142,7 +142,7 @@ Follow these steps to bring an off-chain 📡 transmitter online.
 
 ```bash
 # 1 · clone & enter
-git clone https://github.com/woogieboogie-jl/chainlink-datastreams-transmitter
+git clone https://github.com/woogieboogie-jl/chainlink-datastreams-transmitter/tree/fix/docker-dev-setup
 cd chainlink-datastreams-transmitter
 
 # 2 · env vars
