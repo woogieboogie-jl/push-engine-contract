@@ -80,7 +80,7 @@ Fill in:
 1. `verifierProxy_` – the address from step 1.
 2. `_feedId` – 32-byte identifier of the stream you want to mirror (e.g. ETH/USD).  
    Example: `0x000359843a543ee2fe414dc14c7e7920ef10f4372990b79d6361cdc0dd1ba782`.
-3. `_decimals` – usually **8**.
+3. `_decimals` – usually **18**.
 4. `_description` – human-readable label, e.g. "ETH / USD Feed".
 
 Edit `script/DeployDataStreamsFeed.s.sol` (or the role-assign variant) with your
