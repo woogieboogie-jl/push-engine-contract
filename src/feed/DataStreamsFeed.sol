@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+// --- OpenZeppelin Interfaces ---
 import {AccessControlEnumerable} from "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -19,10 +20,14 @@ import {Roles} from "src/common/Roles.sol";
 import {IDataStreamsUpdateHook} from "src/interfaces/IDataStreamsUpdateHook.sol";
 
 /**
- * @title DataStreamsFeed
- * @author Tyler Loewen, TRILEZ SOFTWARE INC. dba. Adrastia
- * @notice The Data Streams contract is responsible for storing and serving the latest report data from Chainlink
- * Data Streams feeds.
+ * @title DataStreamsFeed (Patched for Compatibility)
+ * @author Adrastia (Tyler Loewen); Patched by Chainlink Labs
+ * @notice This contract is a community-provided example for using Chainlink Data Streams.
+ *
+ * @dev This implementation is based on an original contract from Adrastia. Minimal patches
+ * have been applied by Chainlink Labs for dependency compatibility. Please be aware that this
+ * code has NOT been formally audited by Chainlink Labs. A comprehensive, independent security
+ * audit is strongly recommended before any production use. Use at your own risk.
  *
  * Access is controlled using OpenZeppelin's AccessControlEnumerable, allowing for fine-grained permissions.
  * The roles are setup as follows:
