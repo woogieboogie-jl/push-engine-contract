@@ -34,6 +34,7 @@ contract DeployDataStreamsFeedWithRoleAssign is Script {
         
         // Start the broadcast. The next call will be a sent transaction.
         vm.startBroadcast();
+        address deployer = msg.sender;
 
         // Deploy the DataStreamsFeed contract in a single transaction.
         // We do NOT pass the feeManagerAddress, as the contract finds it itself.
@@ -48,7 +49,10 @@ contract DeployDataStreamsFeedWithRoleAssign is Script {
         deployedAddress = address(feed);
         console.log("DataStreamsFeed deployed at:", deployedAddress);
 
-        feed.grantRole(feed.REPORT_VERIFIER(), msg.sender);
+        // Grant the REPORT_VERIFIER role to the externally-owned account that
+        // is broadcasting the transaction (i.e. the deployer's wallet), not
+        // the transient script contract address.
+        feed.grantRole(feed.REPORT_VERIFIER(), deployer);
         console.log("REPORT VERIFIER Role granted successfully to deployer");
 
         // Stop the broadcast.

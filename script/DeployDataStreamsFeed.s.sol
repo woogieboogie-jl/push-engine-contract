@@ -16,7 +16,6 @@ contract DeployDataStreamsFeed is Script {
         // =================================================================
 
         // The official Chainlink Verifier Proxy address for your target chain.
-        // The contract at this address MUST have the s_feeManager() function.
         address verifierProxyAddress = 0x2ff010DEbC1297f19579B4246cad07bd24F2488A; // <-- TODO: Replace with official address
 
         // The unique ID for the Data Stream you want to track (e.g., ETH/USD).

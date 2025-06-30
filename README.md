@@ -26,15 +26,19 @@ The goal is to give you a quick, copy-pasteable starting point for:
 | **RPC URL**                | Foundry & `cast` need it to send txs. | [Chainlist](https://chainlist.org) |
 | **Private key**            | Account that will own the feed and pay fees. | Export from your wallet → store in `.env` as `PRIVATE_KEY=<hex>` |
 
-Create a `.env` file in the repo root:
+Docker-compose spins up a Redis instance, so make sure **Docker Desktop** (or Docker Engine) *and* the Redis CLI are installed on your machine.
+
+Create a `.env` file in the repo root, then load it into the current shell:
 
 ```bash
+cat >.env <<EOF
 PRIVATE_KEY=<0xYOUR_PRIVATE_KEY>
 RPC_URL_AVAX_FUJI=<https://...>
 RPC_URL_ARBITRUM_SEPOLIA=<https://...>
-```
+EOF
 
-*(Add any other RPCs you plan to use.)*
+source .env
+```
 
 ---
 
@@ -142,18 +146,18 @@ Follow these steps to bring an off-chain 📡 transmitter online.
 
 ```bash
 # 1 · clone & enter
-git clone https://github.com/woogieboogie-jl/chainlink-datastreams-transmitter/tree/fix/docker-dev-setup
-cd chainlink-datastreams-transmitter
+git clone -b fix/docker-dev-setup https://github.com/woogieboogie-jl/chainlink-datastreams-transmitter.git transmitter-test
+cd transmitter-test
 
 # 2 · env vars
 cp .env.example .env            # create your own copy
 # open .env and fill in PRIVATE_KEY, RPC urls, etc.
 
-# 3 · optional – custom config
-auth cp config-chainlink-example.yml config.yml  # customise as needed
+# 3 · required – create the runtime config
+cp config-chainlink-example.yml config.yml      # customise as needed
 
 # 4 · deps & run
-npm install                      # or pnpm install
+pnpm install                      # or pnpm install
 docker compose up -d            # starts redis + node + ui
 
 # 5 · UI
@@ -281,7 +285,18 @@ dashboard.
 * **`REPORT_VERIFIER` missing** → make sure you granted the role to your
   transmitter's address.
 * **LINK balance 0** → top up via faucet and approve LINK spend if needed.
+* **Missing PRIVATE_KEY** → `forge script` will silently fall back to Foundry's
+  default dev key and assign contract roles to
+  `0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38`. Always pass your key via
+  `--private-key …` *or* export it in `.env`/shell.
 
 Happy building! 🚀
 
 [Chainlink Docs]: https://docs.chain.link/data-streams/crypto-streams?page=1&testnetPage=1&testnetSearch=eth
+
+---
+
+> **Security notice** – This repository contains a lightly-patched version of
+> Adrastia's `DataStreamsFeed.sol`. The code **has not been audited by
+> Chainlink Labs**. A comprehensive, independent security review is strongly
+> recommended before any production use.

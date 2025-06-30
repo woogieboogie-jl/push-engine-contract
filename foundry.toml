@@ -5,7 +5,6 @@ load_from_env_file = true
 libs = ["lib"]
 solc_version = "0.8.19"
 remappings = [
-    # Corrected, less specific paths for node_modules packages
     '@openzeppelin/contracts-upgradeable/=node_modules/@openzeppelin/contracts-upgradeable/',
     '@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/',
     '@chainlink/contracts/=node_modules/@chainlink/contracts/',
@@ -16,6 +15,6 @@ remappings = [
 
 
 [rpc_endpoints]
-monad_testnet = "https://testnet-rpc.monad.xyz"
-sepolia = "https://1rpc.io/sepolia"
-avalanche_fuji = "https://avalanche-fuji.drpc.org"
+avalanche_fuji = "https://avalanche-fuji-c-chain-rpc.publicnode.com"
+arbitrum_sepolia = "https://arbitrum-sepolia-rpc.publicnode.com"
+unichain_sepolia = "https://unichain-sepolia-rpc.publicnode.com"
