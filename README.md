@@ -8,7 +8,7 @@
 The goal is to give you a quick, copy-pasteable starting point for:
 
 * deploying your own on-chain `DataStreamsFeed` instance,
-* assigning the correct roles, and
+* funding the feed contract with LINK, and
 * pushing fresh price data on-chain via an off-chain **transmitter**.
 
 > **DYOR!**
@@ -87,25 +87,13 @@ Fill in:
 3. `_decimals` – usually **18**.
 4. `_description` – human-readable label, e.g. "ETH / USD Feed".
 
-Edit `script/DeployDataStreamsFeed.s.sol` (or the role-assign variant) with your
-values, **or** pass them as CLI arguments (see below).
+Edit `script/DeployDataStreamsFeed.s.sol` with your values, **or** pass them as CLI arguments (see below).
 
 ---
 
-## 4&nbsp;· Deploy & verify
+## 4&nbsp;· Deploy & fund
 
 ### Option A · One-shot deploy **with** role assignment
-
-```bash
-forge script script/DeployDataStreamsFeedWithRoleAssign.s.sol:DeployDataStreamsFeedWithRoleAssign \
-  --rpc-url $RPC_URL_AVAX_FUJI \
-  --private-key $PRIVATE_KEY      \
-  --broadcast
-```
-
-This grants the caller `ADMIN` and `REPORT_VERIFIER` automatically.
-
-### Option B · Deploy only
 
 ```bash
 forge script script/DeployDataStreamsFeed.s.sol:DeployDataStreamsFeed \
@@ -114,15 +102,16 @@ forge script script/DeployDataStreamsFeed.s.sol:DeployDataStreamsFeed \
   --broadcast
 ```
 
-Then grant roles manually:
+### Fund the contract with LINK
+
+After deployment transfer some testnet LINK to the **feed contract address** so it can pay verification fees:
 
 ```bash
-# REPORT_VERIFIER role hash (= keccak256("REPORT_VERIFIER_ROLE"))
-ROLE=0xf9f8c20c4c3b902ac9f63b3ab127d0fa52ad9efa682a9cbbead7833d9777cd4e
-
-cast send <DEPLOYED_FEED_ADDRESS> "grantRole(bytes32,address)" $ROLE <EOA_ADDRESS> \
-  --rpc-url $RPC_URL_AVAX_FUJI \
-  --private-key $PRIVATE_KEY
+# Example using cast to transfer 5 LINK (18 decimals)
+cast send $LINK_TOKEN "transfer(address,uint256)" \
+     <DEPLOYED_FEED_ADDRESS> 5000000000000000000 \
+     --rpc-url $RPC_URL_AVAX_FUJI \
+     --private-key $PRIVATE_KEY
 ```
 
 ### (Optional) Verify the contract on RouteScan/Etherscan
@@ -154,7 +143,7 @@ cp .env.example .env            # create your own copy
 # open .env and fill in PRIVATE_KEY, RPC urls, etc.
 
 # 3 · required – create the runtime config
-cp config-chainlink-example.yml config.yml      # customise as needed
+cp config-chainlink-verify-example.yml config.yml      # customise as needed
 
 # 4 · deps & run
 pnpm install                      # or pnpm install
@@ -168,10 +157,10 @@ The transmitter continuously listens for deviation on the ETH/USD feed and, on
 trigger, calls:
 
 ```solidity
-updateReport(uint16 reportVersion, bytes verifiedReportData)
+verifyAndUpdateReport(bytes rawReport, bytes parameterPayload)
 ```
 
-on a single chain but every target contract defined in **config.yml**.
+on every target contract defined in **config.yml**.
 
 ### Minimal working `config.yml`
 
@@ -231,11 +220,12 @@ targetChains:
     targetContracts:
       - feedId: "0x000359843a543ee2fe414dc14c7e7920ef10f4372990b79d6361cdc0dd1ba782"
         address: "0xb3DCAB3217cC2f8f19A9CAa555f5f7C8BB5cB749"
-        functionName: updateReport
-        functionArgs: [reportVersion, verifiedReport]
+        functionName: verifyAndUpdateReport
+        functionArgs: [rawReport, parameterPayload]
+        skipVerify: false
         abi:
-          - inputs: [{internalType: uint16,name: reportVersion,type: uint16},{internalType: bytes,name: verifiedReportData,type: bytes}]
-            name: updateReport
+          - inputs: [{internalType: bytes,name: unverifiedReportData,type: bytes},{internalType: bytes,name: parameterPayload,type: bytes}]
+            name: verifyAndUpdateReport
             outputs: []
             stateMutability: nonpayable
             type: function
@@ -244,16 +234,18 @@ targetChains:
     targetContracts:
       - feedId: "0x000359843a543ee2fe414dc14c7e7920ef10f4372990b79d6361cdc0dd1ba782"
         address: "0x180473Ff989D30F0eDB4a159174C1964A504854D"
-        functionName: updateReport
-        functionArgs: [reportVersion, verifiedReport]
+        functionName: verifyAndUpdateReport
+        functionArgs: [rawReport, parameterPayload]
+        skipVerify: false
         abi: *id001
 
   - chainId: 1301       # Unichain Sepolia
     targetContracts:
       - feedId: "0x000359843a543ee2fe414dc14c7e7920ef10f4372990b79d6361cdc0dd1ba782"
         address: "0x74CD225023c01D6B6244913F6Ce2B899482944f3"
-        functionName: updateReport
-        functionArgs: [reportVersion, verifiedReport]
+        functionName: verifyAndUpdateReport
+        functionArgs: [rawReport, parameterPayload]
+        skipVerify: false
         abi: *id001
 ```
 
@@ -282,13 +274,8 @@ dashboard.
 ### Troubleshooting
 
 * **Gas estimation too high** → adjust `gasCap` in `foundry.toml` or transmitter config.
-* **`REPORT_VERIFIER` missing** → make sure you granted the role to your
-  transmitter's address.
-* **LINK balance 0** → top up via faucet and approve LINK spend if needed.
-* **Missing PRIVATE_KEY** → `forge script` will silently fall back to Foundry's
-  default dev key and assign contract roles to
-  `0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38`. Always pass your key via
-  `--private-key …` *or* export it in `.env`/shell.
+* **LINK balance 0** → top up the feed contract via faucet.
+
 
 Happy building! 🚀
 

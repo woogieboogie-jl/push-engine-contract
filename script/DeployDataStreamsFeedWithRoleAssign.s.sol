@@ -6,8 +6,16 @@ import {DataStreamsFeed} from "../src/feed/DataStreamsFeed.sol"; // Import the m
 
 /**
  * @title Deployment Script for the original DataStreamsFeed
- * @dev Deploys a non-upgradeable instance of the DataStreamsFeed contract.
- * This script is for the contract version that uses local interfaces to discover the Fee Manager.
+ * @dev [LEGACY] Deploys a non-upgradeable instance of `DataStreamsFeed` **and** immediately
+ *      grants the caller the REPORT_VERIFIER role.  You only need this role when you plan to
+ *      push *pre-verified* reports on-chain via `updateReport(uint16,bytes)` (off-chain
+ *      verification path).
+ *
+ *      If you use the recommended on-chain verification flow — calling
+ *      `verifyAndUpdateReport(bytes,bytes)` from the transmitter — **do NOT** run this script.
+ *      Just deploy with `DeployDataStreamsFeed.s.sol` and fund the deployed contract with LINK.
+ *
+ *      The script is kept for backwards-compatibility and testing purposes.
  */
 contract DeployDataStreamsFeedWithRoleAssign is Script {
     function run() external returns (address deployedAddress) {
