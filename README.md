@@ -93,7 +93,7 @@ Edit `script/DeployDataStreamsFeed.s.sol` with your values, **or** pass them as 
 
 ## 4&nbsp;· Deploy & fund
 
-### Option A · One-shot deploy **with** role assignment
+### Deploy the contract
 
 ```bash
 forge script script/DeployDataStreamsFeed.s.sol:DeployDataStreamsFeed \
