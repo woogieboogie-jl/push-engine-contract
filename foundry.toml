@@ -8,8 +8,6 @@ remappings = [
     '@openzeppelin/contracts-upgradeable/=node_modules/@openzeppelin/contracts-upgradeable/',
     '@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/',
     '@chainlink/contracts/=node_modules/@chainlink/contracts/',
-    
-    # Standard path for forge-std
     'forge-std/=lib/forge-std/src/'
 ]
 
