@@ -19,6 +19,11 @@ contract DataStreamsFeedFactory {
     address public immutable verifierProxy;
 
     /**
+     * @notice An errror thrown passing invalid constructor arguments.
+     */
+    error InvalidConstructorArguments();
+
+    /**
      * @notice Emitted when a new DataStreamsFeed contract is created.
      *
      * @param creator The address of the account that created the feed.
@@ -34,6 +39,11 @@ contract DataStreamsFeedFactory {
      * @param verifierProxy_ The address of the verifier proxy contract.
      */
     constructor(address verifierProxy_) {
+        if (verifierProxy_ == address(0)) {
+            // These are definitely invalid arguments
+            revert InvalidConstructorArguments();
+        }
+
         verifierProxy = verifierProxy_;
     }
 
@@ -109,6 +119,7 @@ contract DataStreamsFeedFactory {
         require(feedAddress.code.length == 0, "Feed already deployed at computed address");
 
         assembly {
+            // Skip the first 32 (0x20) bytes which store the length of the byte array
             feedAddress := create2(0, add(bytecode, 0x20), mload(bytecode), finalSalt)
             if iszero(extcodesize(feedAddress)) {
                 revert(0, 0)
