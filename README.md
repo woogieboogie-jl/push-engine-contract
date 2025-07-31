@@ -35,6 +35,7 @@ cat >.env <<EOF
 PRIVATE_KEY=<0xYOUR_PRIVATE_KEY>
 RPC_URL_AVAX_FUJI=<https://...>
 RPC_URL_ARBITRUM_SEPOLIA=<https://...>
+RPC_URL_ETHEREUM_MAINNET=<https://...>
 EOF
 
 source .env
