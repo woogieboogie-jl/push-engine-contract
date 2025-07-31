@@ -111,7 +111,7 @@ contract DataStreamsFeedForkTest is Test, FeedConstants, FeedDataFixture {
     }
 
     string internal ETH_MAINNET_RPC_URL =
-        vm.envString("ETHEREUM_MAINNET_RPC_URL");
+        vm.envString("RPC_URL_ETHEREUM_MAINNET");
     uint256 internal ETH_MAINNET_BLOCK_NUMBER = 22949499;
     address internal ETH_MAINNET_VERIFIER_PROXY_ADDRESS =
         0x5A1634A86e9b7BfEf33F0f3f3EA3b1aBBc4CC85F;
