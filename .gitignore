@@ -5,6 +5,9 @@ node_modules/
 cache/
 out/
 broadcast/
+coverage/
+lcov.info
+foundry.lock
 
 # Environment files (secrets)
 .env
