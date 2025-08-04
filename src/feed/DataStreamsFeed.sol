@@ -885,14 +885,9 @@ contract DataStreamsFeed is
             Hook memory preUpdateHook = _getHook(uint256(HookType.PreUpdate));
 
             (bool success, bytes memory returnData) = preUpdateHook.hookAddress.call{gas: preUpdateHook.hookGasLimit}(
-                abi.encodeWithSelector(
-                    IDataStreamsPreUpdateHook.onPreReportUpdate.selector,
-                    _feedId,
-                    newRoundId,
-                    reportPrice,
-                    reportTimestamp,
-                    reportExpiresAt,
-                    uint32(block.timestamp)
+                abi.encodeCall(
+                    IDataStreamsPreUpdateHook.onPreReportUpdate,
+                    (_feedId, newRoundId, reportPrice, reportTimestamp, reportExpiresAt, uint32(block.timestamp))
                 )
             );
 
@@ -937,14 +932,9 @@ contract DataStreamsFeed is
             Hook memory postUpdateHook = _getHook(uint256(HookType.PostUpdate));
 
             (bool success, bytes memory returnData) = postUpdateHook.hookAddress.call{gas: postUpdateHook.hookGasLimit}(
-                abi.encodeWithSelector(
-                    IDataStreamsPostUpdateHook.onPostReportUpdate.selector,
-                    _feedId,
-                    newRoundId,
-                    reportPrice,
-                    reportTimestamp,
-                    reportExpiresAt,
-                    uint32(block.timestamp)
+                abi.encodeCall(
+                    IDataStreamsPostUpdateHook.onPostReportUpdate,
+                    (_feedId, newRoundId, reportPrice, reportTimestamp, reportExpiresAt, uint32(block.timestamp))
                 )
             );
 
