@@ -13,6 +13,8 @@ remappings = [
     'forge-std/=lib/forge-std/src/'
 ]
 
+# Tests to be done inside of src/ directory
+tests = 'src/tests'
 
 [rpc_endpoints]
 avalanche_fuji = "https://avalanche-fuji-c-chain-rpc.publicnode.com"

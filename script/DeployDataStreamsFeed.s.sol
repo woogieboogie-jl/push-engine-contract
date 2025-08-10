@@ -24,6 +24,9 @@ contract DeployDataStreamsFeed is Script {
         // The number of decimals for the price data.
         uint8 decimals = 18;
 
+        // The maximum value for report expiration duration
+        uint32 maxExpiration = 30 days;
+
         // A human-readable description for the feed.
         string memory description = "My Custom ETH / USD Feed";
         
@@ -41,6 +44,7 @@ contract DeployDataStreamsFeed is Script {
             verifierProxyAddress,
             feedId,
             decimals,
+            maxExpiration,
             description
         );
         
