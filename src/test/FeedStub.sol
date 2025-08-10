@@ -8,8 +8,9 @@ contract FeedStub is DataStreamsFeed {
         address verifierProxy,
         bytes32 feedId,
         uint8 decimals,
+        uint32 maxReportExpirationSeconds,
         string memory description
-    ) DataStreamsFeed(verifierProxy, feedId, decimals, description) {}
+    ) DataStreamsFeed(verifierProxy, feedId, decimals, maxReportExpirationSeconds, description) {}
 
     function stubPush(int192 price, uint32 timestamp, uint32 expiresAt) public {
         TruncatedReport memory lastReport = latestReport;

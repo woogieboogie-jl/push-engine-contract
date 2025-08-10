@@ -63,7 +63,7 @@ contract DataStreamsFeedFactoryTest is Test, FeedConstants, FeedDataFixture {
         );
 
         vm.expectRevert();
-        factory.createFeed(bytes32(0), 18, "Test Feed");
+        factory.createFeed(bytes32(0), 18, MAX_REPORT_EXPIRATION_SECONDS, "Test Feed");
     }
 
     function test_createFeed_revertsWhenAdminAddressIsZero() public {
@@ -75,6 +75,7 @@ contract DataStreamsFeedFactoryTest is Test, FeedConstants, FeedDataFixture {
         factory.createFeed(
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description,
             address(0),
             address(0)
@@ -90,6 +91,7 @@ contract DataStreamsFeedFactoryTest is Test, FeedConstants, FeedDataFixture {
         factory.createFeed(
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -98,6 +100,7 @@ contract DataStreamsFeedFactoryTest is Test, FeedConstants, FeedDataFixture {
         factory.createFeed(
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
     }
@@ -116,6 +119,7 @@ contract DataStreamsFeedFactoryTest is Test, FeedConstants, FeedDataFixture {
             salt1,
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description,
             address(this),
             address(0) // no updater
@@ -125,6 +129,7 @@ contract DataStreamsFeedFactoryTest is Test, FeedConstants, FeedDataFixture {
             salt2,
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description,
             address(this),
             address(0) // no updater
@@ -147,6 +152,7 @@ contract DataStreamsFeedFactoryTest is Test, FeedConstants, FeedDataFixture {
             hex"", // no user salt
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -161,6 +167,7 @@ contract DataStreamsFeedFactoryTest is Test, FeedConstants, FeedDataFixture {
         address feedAddress = factory.createFeed(
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -179,6 +186,7 @@ contract DataStreamsFeedFactoryTest is Test, FeedConstants, FeedDataFixture {
         address feedAddress = factory.createFeed(
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -215,6 +223,7 @@ contract DataStreamsFeedFactoryTest is Test, FeedConstants, FeedDataFixture {
         address feedAddress = factory.createFeed(
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description,
             fakeAdmin,
             noUpdater
@@ -253,6 +262,7 @@ contract DataStreamsFeedFactoryTest is Test, FeedConstants, FeedDataFixture {
         address feedAddress = factory.createFeed(
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description,
             fakeAdmin,
             fakeUpdater
@@ -300,6 +310,7 @@ contract DataStreamsFeedFactoryTest is Test, FeedConstants, FeedDataFixture {
             userSalt,
             feedId,
             decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             description
         );
 
@@ -307,6 +318,7 @@ contract DataStreamsFeedFactoryTest is Test, FeedConstants, FeedDataFixture {
             userSalt,
             feedId,
             decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             description,
             address(this),
             address(0) // no updater
@@ -333,12 +345,14 @@ contract DataStreamsFeedFactoryTest is Test, FeedConstants, FeedDataFixture {
             hex"", // no user salt
             feedId,
             decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             description
         );
 
         address actualAddress = factory.createFeed(
             feedId,
             decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             description,
             address(this),
             address(0) // no updater
