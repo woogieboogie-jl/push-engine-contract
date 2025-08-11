@@ -10,6 +10,7 @@ contract FeedConstants {
 
     uint32 internal constant ROUND_ID_FIRST = 1;
     uint80 internal constant ROUND_ID_TOO_LARGE = 2 ** 32;
+    uint32 internal constant MAX_REPORT_EXPIRATION_SECONDS = 30 days;
 
     FeedDescriptor internal ETH_USD_V2 =
         FeedDescriptor({

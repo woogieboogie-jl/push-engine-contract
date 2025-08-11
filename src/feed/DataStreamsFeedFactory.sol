@@ -59,9 +59,10 @@ contract DataStreamsFeedFactory {
     function createFeed(
         bytes32 feedId,
         uint8 decimals,
+        uint32 maxReportExpirationSeconds,
         string memory description
     ) external virtual returns (address addr) {
-        return createFeed(hex"", feedId, decimals, description, msg.sender, address(0));
+        return createFeed(hex"", feedId, decimals, maxReportExpirationSeconds, description, msg.sender, address(0));
     }
 
     /**
@@ -80,11 +81,12 @@ contract DataStreamsFeedFactory {
     function createFeed(
         bytes32 feedId,
         uint8 decimals,
+        uint32 maxReportExpirationSeconds,
         string memory description,
         address admin,
         address updater
     ) external virtual returns (address addr) {
-        return createFeed(hex"", feedId, decimals, description, admin, updater);
+        return createFeed(hex"", feedId, decimals, maxReportExpirationSeconds, description, admin, updater);
     }
 
     /**
@@ -106,13 +108,14 @@ contract DataStreamsFeedFactory {
         bytes32 userSalt,
         bytes32 feedId,
         uint8 decimals,
+        uint32 maxReportExpirationSeconds,
         string memory description,
         address admin,
         address updater
     ) public virtual returns (address feedAddress) {
         require(admin != address(0), "Admin address cannot be zero");
 
-        bytes memory bytecode = getBytecode(feedId, decimals, description);
+        bytes memory bytecode = getBytecode(feedId, decimals, maxReportExpirationSeconds, description);
         bytes32 finalSalt = keccak256(abi.encodePacked(msg.sender, userSalt, feedId, decimals, description));
 
         feedAddress = computeAddress(finalSalt, bytecode);
@@ -159,9 +162,10 @@ contract DataStreamsFeedFactory {
         bytes32 userSalt,
         bytes32 feedId,
         uint8 decimals,
+        uint32 maxReportExpirationSeconds,
         string memory description
     ) external view virtual returns (address) {
-        bytes memory bytecode = getBytecode(feedId, decimals, description);
+        bytes memory bytecode = getBytecode(feedId, decimals, maxReportExpirationSeconds, description);
         bytes32 finalSalt = keccak256(abi.encodePacked(creator, userSalt, feedId, decimals, description));
 
         return computeAddress(finalSalt, bytecode);
@@ -170,12 +174,13 @@ contract DataStreamsFeedFactory {
     function getBytecode(
         bytes32 feedId,
         uint8 decimals,
+        uint32 maxReportExpirationSeconds,
         string memory description
     ) internal view virtual returns (bytes memory) {
         return
             abi.encodePacked(
                 type(DataStreamsFeed).creationCode,
-                abi.encode(verifierProxy, feedId, decimals, description)
+                abi.encode(verifierProxy, feedId, decimals, maxReportExpirationSeconds, description)
             );
     }
 

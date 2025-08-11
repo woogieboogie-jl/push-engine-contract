@@ -144,6 +144,7 @@ contract DataStreamsFeedForkTest is Test, FeedConstants, FeedDataFixture {
             ETH_MAINNET_VERIFIER_PROXY_ADDRESS,
             reportData.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 

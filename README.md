@@ -76,6 +76,7 @@ constructor(
     address verifierProxy_,
     bytes32 _feedId,
     uint8   _decimals,
+    uint32  _maxReportExpirationSeconds,
     string  memory _description
 )
 ```
@@ -86,9 +87,16 @@ Fill in:
 2. `_feedId` – 32-byte identifier of the stream you want to mirror (e.g. ETH/USD).  
    Example: `0x000359843a543ee2fe414dc14c7e7920ef10f4372990b79d6361cdc0dd1ba782`.
 3. `_decimals` – usually **18**.
-4. `_description` – human-readable label, e.g. "ETH / USD Feed".
+4. `_maxReportExpirationSeconds` – the maximum allowed window between a report's observation time and its `expiresAt`.
+   - If a report's `expiresAt` is greater than `observationsTimestamp + _maxReportExpirationSeconds`, the update will revert.
+   - Example deploy scripts default to `30 days`, but you should set this to what makes sense for your deployment.
+5. `_description` – human-readable label, e.g. "ETH / USD Feed".
 
-Edit `script/DeployDataStreamsFeed.s.sol` with your values, **or** pass them as CLI arguments (see below).
+Edit the deploy scripts with your values, **or** pass them as CLI arguments (see below).
+
+Where to set the expiration window in scripts:
+- `script/DeployDataStreamsFeed.s.sol`: `uint32 maxExpiration = 30 days;` is passed to the constructor.
+- `script/DeployDataStreamsFeedWithRoleAssign.s.sol`: `uint32 maxExpiration = 30 days;` is passed to the constructor.
 
 ---
 

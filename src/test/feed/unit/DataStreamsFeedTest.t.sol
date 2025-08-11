@@ -127,6 +127,8 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
         verifierStub = new VerifierStub();
     }
 
+    
+
     function test_ConstructorRevertsWhenVerifierProxyIsZeroAddress() public {
         // This test checks that the constructor of DataStreamsFeed reverts
         // when the verifier proxy address is zero.
@@ -138,6 +140,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(0),
             FeedConstants.ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
     }
@@ -151,6 +154,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             bytes32(0),
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
     }
@@ -162,6 +166,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -178,6 +183,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             FAKE_USD_8DEC_V3.feedId,
             FAKE_USD_8DEC_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             FAKE_USD_8DEC_V3.description
         );
 
@@ -193,6 +199,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -237,6 +244,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -255,6 +263,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -273,6 +282,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -300,6 +310,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -327,6 +338,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -352,6 +364,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -367,6 +380,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -383,6 +397,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -404,6 +419,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -424,6 +440,41 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
         );
     }
 
+    function test_AdminCanSetMaxExpriation() public {
+        DataStreamsFeed feed = new DataStreamsFeed(
+            address(verifierStub),
+            ETH_USD_V4.feedId,
+            ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
+            ETH_USD_V3.description
+        );
+
+        address admin = address(this);
+        address randomUser = address(0xBEEF);
+        address verifierRoleHolder = address(0xC0DE);
+
+        feed.grantRole(feed.REPORT_VERIFIER(), verifierRoleHolder);
+
+        vm.startPrank(admin);
+        feed.setMaxReportExpiration(10 days);
+        vm.stopPrank();
+        assertEq(
+            feed.maxReportExpirationSeconds(),
+            10 days,
+            "Admin should be able to update expiration"
+        );
+
+        vm.startPrank(randomUser);
+        vm.expectRevert();
+        feed.setMaxReportExpiration(5 days);
+        vm.stopPrank();
+
+        vm.startPrank(verifierRoleHolder);
+        vm.expectRevert();
+        feed.setMaxReportExpiration(5 days);
+        vm.stopPrank();
+    }
+
     function test_HasVersion() public {
         // This test checks that the DataStreamsFeed contract has a version function
         // that returns a non-empty string.
@@ -431,18 +482,20 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
         feed.version();
     }
-
+    
     function test_NotInitiallyPaused() public {
         // This test checks that the constructor of DataStreamsFeed initializes the feed in a non-paused state.
         DataStreamsFeed feed = new DataStreamsFeed(
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -458,6 +511,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -507,6 +561,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -538,6 +593,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -572,6 +628,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -601,6 +658,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -625,6 +683,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -659,6 +718,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -686,6 +746,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -722,6 +783,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -760,6 +822,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -796,6 +859,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -825,6 +889,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -854,6 +919,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -925,6 +991,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -995,6 +1062,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -1084,6 +1152,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -1156,6 +1225,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -1228,6 +1298,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -1311,6 +1382,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -1394,6 +1466,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
         FakeErc20 fakeErc20 = new FakeErc20();
@@ -1426,6 +1499,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
         FakeErc20 fakeErc20 = new FakeErc20();
@@ -1452,6 +1526,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
         FakeErc20 fakeErc20 = new FakeErc20();
@@ -1479,6 +1554,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -1642,6 +1718,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -1688,6 +1765,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -1715,6 +1793,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -1742,6 +1821,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -1769,6 +1849,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -1798,6 +1879,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -1835,6 +1917,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -1916,6 +1999,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -1979,6 +2063,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2042,6 +2127,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2084,6 +2170,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2177,6 +2264,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2229,6 +2317,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2310,6 +2399,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2391,6 +2481,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2521,6 +2612,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2573,6 +2665,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2625,6 +2718,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2701,6 +2795,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2744,6 +2839,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2787,6 +2883,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2849,6 +2946,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2901,6 +2999,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2953,6 +3052,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -2997,6 +3097,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3038,6 +3139,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3053,6 +3155,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3068,6 +3171,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3083,6 +3187,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3098,6 +3203,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3113,6 +3219,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3130,6 +3237,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3186,6 +3294,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3240,6 +3349,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3264,6 +3374,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3288,6 +3399,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3312,6 +3424,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3347,6 +3460,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3433,12 +3547,123 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
         );
     }
 
+    // Moved near other updateReport tests for coherence
+    function test_updateReport_revertsWhenReportExpirationTooFar() public {
+        DataStreamsFeed feed = new DataStreamsFeed(
+            address(verifierStub),
+            ETH_USD_V4.feedId,
+            ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
+            ETH_USD_V3.description
+        );
+
+        address verifierRoleHolder = address(0xC0DE);
+        feed.grantRole(feed.REPORT_VERIFIER(), verifierRoleHolder);
+
+        uint32 currentTime = uint32(block.timestamp);
+        uint32 maxExpiration = feed.maxReportExpirationSeconds();
+
+        // Build unverified report that expires one second beyond the allowed window
+        int192 price = int192(int256((uint256(2500) * 10 ** ETH_USD_V3.decimals)));
+        uint32 expiresTooFar = currentTime + maxExpiration + 1;
+
+        bytes memory unverified = generateReportData(
+            ETH_USD_V4.feedId,
+            currentTime,
+            currentTime,
+            expiresTooFar,
+            price,
+            true
+        );
+        bytes memory parameterPayload = abi.encode(address(0));
+        bytes memory verified = verifierStub.verify(unverified, parameterPayload);
+
+        vm.startPrank(verifierRoleHolder);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DataStreamsFeed.ReportExpirationTooFarInFuture.selector,
+                expiresTooFar,
+                currentTime + maxExpiration
+            )
+        );
+        feed.updateReport(4, verified);
+        vm.stopPrank();
+    }
+
+    // Moved near other updateReport tests for coherence
+    function test_updateReport_revertsWhenReportExpirationTooFarAfterAdminChange() public {
+        DataStreamsFeed feed = new DataStreamsFeed(
+            address(verifierStub),
+            ETH_USD_V4.feedId,
+            ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
+            ETH_USD_V3.description
+        );
+
+        // Setup verifier role
+        address verifierRoleHolder = address(0xC0DE);
+        feed.grantRole(feed.REPORT_VERIFIER(), verifierRoleHolder);
+
+        uint32 currentTime = uint32(block.timestamp);
+        uint32 newMaxExpiration = uint32(20 days);
+
+        // Admin lowers the max expiration window
+        vm.startPrank(address(this));
+        feed.setMaxReportExpiration(newMaxExpiration);
+        vm.stopPrank();
+
+        // Build a report that would have been valid under 30 days but is now invalid under 20 days
+        int192 price = int192(int256((uint256(3000) * 10 ** ETH_USD_V3.decimals)));
+        uint32 expiresTooFar = currentTime + uint32(30 days);
+
+        bytes memory unverifiedTooFar = generateReportData(
+            ETH_USD_V4.feedId,
+            currentTime,
+            currentTime,
+            expiresTooFar,
+            price,
+            true
+        );
+        bytes memory parameterPayload = abi.encode(address(0));
+        bytes memory verifiedTooFar = verifierStub.verify(unverifiedTooFar, parameterPayload);
+
+        vm.startPrank(verifierRoleHolder);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DataStreamsFeed.ReportExpirationTooFarInFuture.selector,
+                expiresTooFar,
+                currentTime + newMaxExpiration
+            )
+        );
+        feed.updateReport(4, verifiedTooFar);
+        vm.stopPrank();
+
+        // Build a report valid under the new 20-day window and accept it
+        uint32 expiresValid = currentTime + newMaxExpiration;
+        bytes memory unverifiedValid = generateReportData(
+            ETH_USD_V4.feedId,
+            currentTime,
+            currentTime,
+            expiresValid,
+            price,
+            true
+        );
+        bytes memory verifiedValid = verifierStub.verify(unverifiedValid, parameterPayload);
+
+        vm.startPrank(verifierRoleHolder);
+        feed.updateReport(4, verifiedValid);
+        vm.stopPrank();
+
+        assertEq(feed.latestRound(), 1, "Report with new valid expiration should be accepted");
+    }
+
     function test_verifyAndUpdateReport_handlesNoFeeToken() public {
         // This test checks that verifyAndUpdateReport works correctly when no fee token is provided.
         DataStreamsFeed feed = new DataStreamsFeed(
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3464,6 +3689,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3493,6 +3719,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3534,6 +3761,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3595,6 +3823,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 
@@ -3641,6 +3870,7 @@ contract DataStreamsFeedTest is Test, FeedConstants, FeedDataFixture {
             address(verifierStub),
             ETH_USD_V3.feedId,
             ETH_USD_V3.decimals,
+            MAX_REPORT_EXPIRATION_SECONDS,
             ETH_USD_V3.description
         );
 

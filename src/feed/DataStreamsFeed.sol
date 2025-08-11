@@ -69,6 +69,9 @@ contract DataStreamsFeed is
     /**
      * @notice The report data structure. This is a truncated version of the full report data to only occupy two storage
      * slots.
+     * @dev This struct uses uint32 for timestamps for gas optimization. This is subject to the
+     * "Year 2106 problem" where the unsigned 32-bit integer will overflow. This is an
+     * accepted trade-off for the intended lifespan of this contract version.
      */
     struct TruncatedReport {
         // SLOT 1
@@ -158,6 +161,11 @@ contract DataStreamsFeed is
      * @notice The ID of the feed. This is the same as the feedId in the report.
      */
     bytes32 internal immutable _feedId;
+
+    /**
+     * @notice The maximum expiration duration to be set in the constructor. ADMIN has authority to change the set value
+     */
+    uint32 public maxReportExpirationSeconds;
 
     /**
      * @notice The latest report data.
@@ -257,6 +265,14 @@ contract DataStreamsFeed is
      */
     error ReportIsExpired(uint32 expiresAt, uint32 currentTimestamp);
 
+
+    /**
+     * @notice An error thrown when, upon updating the report, the report's expiresAt exceeds the value(maxReportExpirationSeconds) set by the ADMIN
+     * @param expiresAt The timestamp at which the report expired.
+     * @param maxAllowed The max expiration duration set by the ADMIN
+     */ 
+    error ReportExpirationTooFarInFuture(uint32 expiresAt, uint32 maxAllowed);
+
     /**
      * @notice An error thrown when, upon updating the report, the report's feed ID does not match this contract's feed
      * ID.
@@ -350,7 +366,7 @@ contract DataStreamsFeed is
      * @param decimals_ The number of decimals used in the feed. This is the same as the decimals used in the report.
      * @param description_ The description of the feed.
      */
-    constructor(address verifierProxy_, bytes32 feedId_, uint8 decimals_, string memory description_) {
+    constructor(address verifierProxy_, bytes32 feedId_, uint8 decimals_, uint32 maxReportExpirationSeconds_, string memory description_ ) {
         if (verifierProxy_ == address(0) || feedId_ == bytes32(0)) {
             // These are definitely invalid arguments
             revert InvalidConstructorArguments();
@@ -359,6 +375,7 @@ contract DataStreamsFeed is
         verifierProxy = IAdrastiaVerifierProxy(verifierProxy_);
         _feedId = feedId_;
         decimals = decimals_;
+        maxReportExpirationSeconds = maxReportExpirationSeconds_;
         description = description_;
 
         latestReport = TruncatedReport(0, 0, 0, 0, 0);
@@ -404,6 +421,14 @@ contract DataStreamsFeed is
         configAndState.updatesPaused = paused_;
 
         emit PauseStatusChanged(msg.sender, paused_, block.timestamp);
+    }
+
+
+    /**
+     * @notice Allows the ADMIN to set the maximum expiration duration for incoming reports.
+     */
+    function setMaxReportExpiration(uint32 _newMaxExpirationSeconds) external onlyRole(Roles.ADMIN) {
+        maxReportExpirationSeconds = _newMaxExpirationSeconds;
     }
 
     /**
@@ -867,6 +892,10 @@ contract DataStreamsFeed is
 
         if (block.timestamp >= reportExpiresAt) {
             revert ReportIsExpired(reportExpiresAt, uint32(block.timestamp));
+        }
+
+        if (reportExpiresAt > reportTimestamp + maxReportExpirationSeconds) {
+            revert ReportExpirationTooFarInFuture(reportExpiresAt, reportTimestamp + maxReportExpirationSeconds);
         }
 
         if (block.timestamp < reportValidFromTimestamp) {
