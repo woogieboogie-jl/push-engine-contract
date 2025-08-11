@@ -16,7 +16,7 @@ contract DeployDataStreamsFeed is Script {
         // =================================================================
 
         // The official Chainlink Verifier Proxy address for your target chain.
-        address verifierProxyAddress = 0x2ff010DEbC1297f19579B4246cad07bd24F2488A; // <-- TODO: Replace with official address
+        address verifierProxyAddress = 0x2bf612C65f5a4d388E687948bb2CF842FFb8aBB3; // <-- TODO: Replace with official address
 
         // The unique ID for the Data Stream you want to track (e.g., ETH/USD).
         bytes32 feedId = 0x000359843a543ee2fe414dc14c7e7920ef10f4372990b79d6361cdc0dd1ba782; // <-- TODO: Replace with the desired feed ID
