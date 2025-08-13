@@ -16,8 +16,8 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(ethers@5.8.0)
       '@openzeppelin/contracts':
-        specifier: 4.9.6
-        version: 4.9.6
+        specifier: 5.4.0
+        version: 5.4.0
 
 packages:
 
@@ -220,6 +220,9 @@ packages:
 
   '@openzeppelin/contracts@4.9.6':
     resolution: {integrity: sha512-xSmezSupL+y9VkHZJGDoCBpmnB2ogM13ccaYDWqJTfS3dbuHkgjuwDFUmaFauBCboQMGB/S5UqUl2y54X99BmA==}
+
+  '@openzeppelin/contracts@5.4.0':
+    resolution: {integrity: sha512-eCYgWnLg6WO+X52I16TZt8uEjbtdkgLC0SUX/xnAksjjrQI4Xfn4iBRoI5j55dmlOhDv1Y7BoR3cU7e3WWhC6A==}
 
   '@scroll-tech/contracts@0.1.0':
     resolution: {integrity: sha512-aBbDOc3WB/WveZdpJYcrfvMYMz7ZTEiW8M9XMJLba8p9FAR5KGYB/cV+8+EUsq3MKt7C1BfR+WnXoTVdvwIY6w==}
@@ -1284,6 +1287,8 @@ snapshots:
   '@openzeppelin/contracts@4.7.3': {}
 
   '@openzeppelin/contracts@4.9.6': {}
+
+  '@openzeppelin/contracts@5.4.0': {}
 
   '@scroll-tech/contracts@0.1.0': {}
 
