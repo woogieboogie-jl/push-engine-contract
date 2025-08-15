@@ -1,8 +1,13 @@
 name: CI
 
 on:
+  # This section tells GitHub WHEN to run the workflow.
   push:
-  pull_request:
+    # We are specifying to only run on pushes to the 'main' branch.
+    branches:
+      - main
+  
+  # This allows you to manually run the workflow from the "Actions" tab on GitHub.
   workflow_dispatch:
 
 env:
@@ -10,7 +15,8 @@ env:
 
 jobs:
   check:
-    # ...
+    name: Foundry Project Check
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
