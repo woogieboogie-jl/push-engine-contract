@@ -12,7 +12,7 @@ import {DataStreamsFeed} from "../src/feed/DataStreamsFeed.sol"; // Import the m
  *      verification path).
  *
  *      If you use the recommended on-chain verification flow — calling
- *      `verifyAndUpdateReport(bytes,bytes)` from the transmitter — **do NOT** run this script.
+ *      `verifyAndUpdateReport(bytes,bytes)` from the pushengine — **do NOT** run this script.
  *      Just deploy with `DeployDataStreamsFeed.s.sol` and fund the deployed contract with LINK.
  *
  *      The script is kept for backwards-compatibility and testing purposes.
