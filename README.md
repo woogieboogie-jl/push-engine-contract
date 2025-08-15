@@ -9,7 +9,7 @@ The goal is to give you a quick, copy-pasteable starting point for:
 
 * deploying your own on-chain `DataStreamsFeed` instance,
 * funding the feed contract with LINK, and
-* pushing fresh price data on-chain via an off-chain **transmitter**.
+* pushing fresh price data on-chain via an off-chain **pushengine**.
 
 > **DYOR!**
 > This project is a community endeavour – audit the code and contracts before
@@ -138,14 +138,14 @@ forge verify-contract \
 
 ---
 
-## 5&nbsp;· Run the transmitter
+## 5&nbsp;· Run the pushengine
 
-Follow these steps to bring an off-chain 📡 transmitter online.
+Follow these steps to bring an off-chain 📡 pushengine online.
 
 ```bash
 # 1 · clone & enter
-git clone -b fix/docker-dev-setup https://github.com/woogieboogie-jl/chainlink-datastreams-transmitter.git transmitter-test
-cd transmitter-test
+git clone -b https://github.com/hack-bg/push-engine.git push-engine
+cd push-engine
 
 # 2 · env vars
 cp .env.example .env            # create your own copy
@@ -162,7 +162,7 @@ docker compose up -d            # starts redis + node + ui
 open http://localhost:3000       # dashboard
 ```
 
-The transmitter continuously listens for deviation on the ETH/USD feed and, on
+The pushengine continuously listens for deviation on the ETH/USD feed and, on
 trigger, calls:
 
 ```solidity
@@ -262,7 +262,7 @@ targetChains:
 
 #### Need help?
 
-* Full transmitter docs → **[README](https://github.com/woogieboogie-jl/chainlink-datastreams-transmitter#readme)**
+* Full pushengine docs → **[README](https://github.com/hackbg/push-engine#readme)**
 * Example configs → `config-chainlink-example.yml` in that repo.
 
 Once the service is running you can watch log output in `logs/` or the browser
@@ -282,7 +282,7 @@ dashboard.
 
 ### Troubleshooting
 
-* **Gas estimation too high** → adjust `gasCap` in `foundry.toml` or transmitter config.
+* **Gas estimation too high** → adjust `gasCap` in `foundry.toml` or pushengine config.
 * **LINK balance 0** → top up the feed contract via faucet.
 
 
