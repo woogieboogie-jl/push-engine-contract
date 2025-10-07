@@ -1,0 +1,45 @@
+{
+  "factoryAddress": "0xdcAD513AE2f3C030Cc22C99B8B1e65e0046BE1ED",
+  "feeds": [
+    {
+      "name": "AAPL / USD",
+      "userSalt": "0x000000000000000000000000000000000000000000000000000000004141504c",
+      "feedId": "0x0008b8ad9dc4061d1064033c3abc8a4e3f056e5b61d8533e8190eb96ef3b330b",
+      "decimals": 8,
+      "maxReportExpirationSeconds": 2592000,
+      "description": "AAPL / USD Data Feed",
+      "admin": "0x4fed0A5B65eac383D36E65733786386709B86be8",
+      "updater": "0x4fed0A5B65eac383D36E65733786386709B86be8"
+    },
+    {
+      "name": "AMZN / USD",
+      "userSalt": "0x00000000000000000000000000000000000000000000000000000000414d5a4e",
+      "feedId": "0x0008b3b5edb969383980724bea9a7b18064631ae69f981964cd8abc335c32680",
+      "decimals": 8,
+      "maxReportExpirationSeconds": 2592000,
+      "description": "AMZN / USD Data Feed",
+      "admin": "0x4fed0A5B65eac383D36E65733786386709B86be8",
+      "updater": "0x4fed0A5B65eac383D36E65733786386709B86be8"
+    },
+    {
+      "name": "GOOGL / USD",
+      "userSalt": "0x00000000000000000000000000000000000000000000000000000000414d5a4e",
+      "feedId": "0x0008ff76a15e47898fcdfbb3463c1f4c18ea24e83b8ad5ff8b25be4df5df4856",
+      "decimals": 8,
+      "maxReportExpirationSeconds": 2592000,
+      "description": "GOOGL / USD Data Feed",
+      "admin": "0x4fed0A5B65eac383D36E65733786386709B86be8",
+      "updater": "0x4fed0A5B65eac383D36E65733786386709B86be8"
+    },
+    {
+      "name": "SOL / USD",
+      "userSalt": "0x00000000000000000000000000000000000000000000000000000000414d5a4e",
+      "feedId": "0x0003d338ea2ac3be9e026033b1aa601673c37bab5e13851c59966f9f820754d6",
+      "decimals": 8,
+      "maxReportExpirationSeconds": 2592000,
+      "description": "SOL / USD Data Feed",
+      "admin": "0x4fed0A5B65eac383D36E65733786386709B86be8",
+      "updater": "0x4fed0A5B65eac383D36E65733786386709B86be8"
+    }
+  ]
+}
